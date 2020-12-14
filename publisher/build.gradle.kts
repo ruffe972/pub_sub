@@ -1,3 +1,5 @@
+import org.springframework.boot.gradle.tasks.run.BootRun
+
 plugins {
     id("org.springframework.boot") version "2.4.1"
     id("io.spring.dependency-management") version "1.0.10.RELEASE"
@@ -13,5 +15,10 @@ repositories {
 }
 
 dependencies {
+    // todo надо ли делать константу 2.4.1?
     implementation("org.springframework.boot:spring-boot-starter-webflux:2.4.1")
+}
+
+tasks.withType<BootRun> {
+    standardInput = System.`in`
 }

@@ -6,6 +6,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.Instant;
 import java.util.Random;
 
+/**
+ * Generates random json messages according to the specification
+ */
 public class MessageGenerator {
     private final Random random;
     private final ObjectMapper objectMapper;
@@ -17,16 +20,24 @@ public class MessageGenerator {
 
     String generate() {
         try {
-            return objectMapper.writeValueAsString(new Message(random));
+            return objectMapper.writeValueAsString(new Message(random));  // todo di?
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
     }
 }
 
+/**
+ * Used for serialization to json.
+ */
 class Message {
     public final int msisdn;
     public final String action;
+
+    /**
+     * In seconds.
+     */
+    @SuppressWarnings("unused")
     public final long timestamp = Instant.now().getEpochSecond();
 
     Message(Random random) {

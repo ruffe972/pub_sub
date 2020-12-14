@@ -17,6 +17,6 @@ public class Config {
 
     @Bean
     MessagePublisher messagePublisher() {
-        return new MessagePublisher(WebClient.create());
+        return new MessagePublisher(WebClient.create("http://localhost:8080"));
     }
 }

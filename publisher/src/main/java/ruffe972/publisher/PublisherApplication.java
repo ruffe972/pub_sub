@@ -6,6 +6,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import java.util.Scanner;
 
+/**
+ * Generates and sends json messages to the server.
+ */
 @SpringBootApplication
 public class PublisherApplication implements CommandLineRunner {
 	private final MessageGenerator messageGenerator;
@@ -20,12 +23,16 @@ public class PublisherApplication implements CommandLineRunner {
 		SpringApplication.run(PublisherApplication.class, args);
 	}
 
+	/**
+	 * Message is sent on user request.
+	 */
 	@Override
 	public void run(String... args) {
 		System.out.printf(
 				"%sEnter command 'p' to publish a message. 'q' - quit.%s",
 				System.lineSeparator(),
 				System.lineSeparator());
+		// todo di?
 		try (var scanner = new Scanner(System.in)) {
 			boolean shouldQuit;
 			do {
@@ -35,7 +42,10 @@ public class PublisherApplication implements CommandLineRunner {
 		}
 	}
 
-	// Returns true for 'q' command.
+	/**
+	 * @param command the command entered by user. For example, "p".
+	 * @return true for "q" command.
+	 */
 	private boolean runCommand(String command) {
 		if (command.equals("q")) {
 			return true;
