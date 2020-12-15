@@ -4,22 +4,21 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 
-import java.util.Optional;
-
 /**
  * Thread-safe. Handles requests with purchase/subscription actions from the client.
  */
+@Component
 public class RequestHandler {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
-    private final ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper = new ObjectMapper();
     private final Dao dao;
 
-    RequestHandler(ObjectMapper objectMapper, Dao dao) {
-        this.objectMapper = objectMapper;
+    RequestHandler(Dao dao) {
         this.dao = dao;
     }
 
@@ -28,28 +27,37 @@ public class RequestHandler {
                 .bodyToMono(String.class)
                 .doOnNext(it -> logger.info("Got a client request. Body: {}.", it))
                 .map(this::messageFromString)
-                .doOnNext(it -> it.ifPresent(
-                        clientMessage -> dao.create(clientMessage.toDaoMessage())
-                ))
-                .map(message -> message.isEmpty()
-                        ? ServerResponse.badRequest()
-                        : ServerResponse.ok())
-                .flatMap(ServerResponse.HeadersBuilder::build)
-                .doOnNext(it -> logger.info("Responding with a status code: {}.", it.statusCode()));
+                .doOnError(e -> logger.error(e.getMessage()))
+                .doOnNext(messageDto -> {
+                    logger.info("Request is valid.");
+                    dao.create(messageDto);
+                })
+                .map(it -> ServerResponse.ok())
+                .onErrorReturn(e -> e instanceof InvalidRequestException,
+                        ServerResponse.badRequest())
+                .flatMap(ServerResponse.HeadersBuilder::build);
     }
 
     /**
-     * Transforms Json into ClientMessage
-     * @return 'empty' for incorrect input
+     * Transforms Json into MessageDto.
+     * @throws InvalidRequestException if the request body is invalid.
      */
-    private Optional<ClientMessage> messageFromString(String string) {
+    private MessageDto messageFromString(String string) {
         try {
-            var builder = Optional.ofNullable(
-                    objectMapper.readValue(string, ClientMessage.Builder.class));
-            return builder.flatMap(ClientMessage.Builder::build);
+            var messageDto = objectMapper.readValue(string, MessageDto.class);
+            if (!isValid(messageDto)) {
+                throw new InvalidRequestException(null);
+            }
+            return messageDto;
         } catch (JsonProcessingException e) {
-            return Optional.empty();
+            throw new InvalidRequestException(e);
         }
+    }
+
+    private static boolean isValid(MessageDto messageDto) {
+        return messageDto.msisdn >= 0
+                && messageDto.action.equals("PURCHASE") || messageDto.action.equals("SUBSCRIPTION")
+                && messageDto.timestamp >= 0;
     }
 }
 

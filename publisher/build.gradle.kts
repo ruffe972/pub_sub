@@ -15,7 +15,6 @@ repositories {
 }
 
 dependencies {
-    // todo надо ли делать константу 2.4.1?
     implementation("org.springframework.boot:spring-boot-starter-webflux:2.4.1")
 }
 

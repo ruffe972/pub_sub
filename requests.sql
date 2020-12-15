@@ -9,5 +9,3 @@ create table purchase (
     msisdn int not null,
     timestamp timestamp not null
 );
-
-select * from subscription full outer join purchase on subscription.id=purchase.id;
