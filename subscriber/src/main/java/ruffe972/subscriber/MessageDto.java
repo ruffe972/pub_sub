@@ -13,5 +13,4 @@ public class MessageDto {
      * In seconds.
      */
     public long timestamp = 0;
-
 }

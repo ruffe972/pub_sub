@@ -13,8 +13,8 @@ import java.util.Scanner;
  */
 @SpringBootApplication
 public class PublisherApplication implements CommandLineRunner {
-	private final static String QUIT_COMMAND = "q";
-	private static final Logger logger = LoggerFactory.getLogger(PublisherApplication.class);
+    private final static String QUIT_COMMAND = "q";
+    private static final Logger logger = LoggerFactory.getLogger(PublisherApplication.class);
     private final MessageGenerator messageGenerator;
     private final MessagePublisher messagePublisher;
 
@@ -52,23 +52,23 @@ public class PublisherApplication implements CommandLineRunner {
         if (command.equals(QUIT_COMMAND)) {
             System.out.println("Goodbye.");
         } else if (command.equals("p")) {
-			runPublishCommand();
+            runPublishCommand();
         } else {
             System.out.println("Command is not recognized.");
         }
     }
 
-	/**
-	 * Sends a message to the server.
-	 */
-	private void runPublishCommand() {
-		String message = messageGenerator.generate();
-		logger.info("Sending message to server: {}.", message);
-		messagePublisher.publish(message).subscribe(
-				it -> System.out.println("Success."),
-				e -> {
-					System.out.println("Failure.");
-					logger.error(e.getMessage());
-				});
-	}
+    /**
+     * Sends a message to the server.
+     */
+    private void runPublishCommand() {
+        String message = messageGenerator.generate();
+        logger.info("Sending message to server: {}.", message);
+        messagePublisher.publish(message).subscribe(
+                it -> System.out.println("Success."),
+                e -> {
+                    System.out.println("Failure.");
+                    logger.error(e.getMessage());
+                });
+    }
 }
