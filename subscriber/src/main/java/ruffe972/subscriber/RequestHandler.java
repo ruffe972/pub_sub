@@ -28,10 +28,8 @@ public class RequestHandler {
                 .doOnNext(it -> logger.info("Got a client request. Body: {}.", it))
                 .map(this::messageFromString)
                 .doOnError(e -> logger.error(e.getMessage()))
-                .doOnNext(messageDto -> {
-                    logger.info("Request is valid.");
-                    dao.create(messageDto);
-                })
+                .doOnNext(messageDto -> logger.info("Request is valid."))
+                .flatMap(dao::create)
                 .map(it -> ServerResponse.ok())
                 .onErrorReturn(e -> e instanceof InvalidRequestException,
                         ServerResponse.badRequest())

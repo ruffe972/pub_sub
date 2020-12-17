@@ -2,6 +2,8 @@ package ruffe972.subscriber;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
+import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 import java.sql.Timestamp;
 
@@ -20,12 +22,14 @@ public class Dao {
     /**
      * @param message data from message is written to the databases.
      */
-    void create(MessageDto message) {
+    Mono<Void> create(MessageDto message) {
         String tableName = message.action.toLowerCase();
         var sql = String.format("insert into %s values (default, ?, ?)", tableName);
-        jdbcTemplate.update(
+        var mono = Mono.<Void>fromRunnable(() -> jdbcTemplate.update(
                 sql,
                 message.msisdn,
-                new Timestamp(message.timestamp * 1000));
+                new Timestamp(message.timestamp * 1000)));
+        mono.subscribeOn(Schedulers.boundedElastic());
+        return mono;
     }
 }
