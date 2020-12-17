@@ -6,6 +6,7 @@ import java.util.Random;
 /**
  * Used for serialization to json.
  */
+@SuppressWarnings("unused")
 public class Message {
     public final int msisdn;
     public final String action;

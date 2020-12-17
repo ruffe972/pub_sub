@@ -7,6 +7,7 @@ import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
 import javax.sql.DataSource;
 
+@SuppressWarnings("unused")
 @Configuration
 public class Config {
     @Bean

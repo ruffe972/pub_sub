@@ -12,7 +12,8 @@ import java.sql.Timestamp;
 public class Dao {
     private final JdbcTemplate jdbcTemplate;
 
-    public Dao(JdbcTemplate jdbcTemplate) {
+    @SuppressWarnings("unused")
+    Dao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 

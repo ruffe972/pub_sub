@@ -11,6 +11,7 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 /**
  * For purchase and subscription actions.
  */
+@SuppressWarnings("unused")
 @Configuration
 public class Router {
     @Bean
