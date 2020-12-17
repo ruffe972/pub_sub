@@ -68,10 +68,11 @@ public class PublisherApplication implements CommandLineRunner {
         String message = messageGenerator.generate();
         logger.info("Sending message to server: {}.", message);
         messagePublisher.publish(message).subscribe(
-                it -> System.out.println("Success."),
+                null,
                 e -> {
                     System.out.println("Failure.");
                     logger.error(e.getMessage());
-                });
+                },
+                () -> System.out.println("Success."));
     }
 }
