@@ -13,6 +13,7 @@ import java.util.Scanner;
  */
 @SpringBootApplication
 public class PublisherApplication implements CommandLineRunner {
+    private final static String PUBLISH_COMMAND = "p";
     private final static String QUIT_COMMAND = "q";
     private static final Logger logger = LoggerFactory.getLogger(PublisherApplication.class);
     private final MessageGenerator messageGenerator;
@@ -33,8 +34,10 @@ public class PublisherApplication implements CommandLineRunner {
     @Override
     public void run(String... args) {
         System.out.printf(
-                "%sEnter command 'p' to publish a message. 'q' - quit.%s",
+                "%sEnter command '%s' to publish a message. '%s' - quit.%s",
                 System.lineSeparator(),
+                PUBLISH_COMMAND,
+                QUIT_COMMAND,
                 System.lineSeparator());
         try (var scanner = new Scanner(System.in)) {
             String command;
