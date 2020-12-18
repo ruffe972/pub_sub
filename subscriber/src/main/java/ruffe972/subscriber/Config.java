@@ -1,5 +1,6 @@
 package ruffe972.subscriber;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -11,12 +12,12 @@ import javax.sql.DataSource;
 @Configuration
 public class Config {
     @Bean
-    DataSource dataSource() {
+    DataSource dataSource(@Value("${database_password}") String password) {
         var dataSource = new DriverManagerDataSource();
         dataSource.setDriverClassName("org.postgresql.Driver");
         dataSource.setUrl("jdbc:postgresql://localhost:5432/messaging");
         dataSource.setUsername("postgres");
-        dataSource.setPassword("1");
+        dataSource.setPassword(password);
         return dataSource;
     }
 
