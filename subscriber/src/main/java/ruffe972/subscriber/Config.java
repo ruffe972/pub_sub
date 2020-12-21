@@ -15,7 +15,7 @@ public class Config {
     DataSource dataSource(@Value("${database_password}") String password) {
         var dataSource = new DriverManagerDataSource();
         dataSource.setDriverClassName("org.postgresql.Driver");
-        dataSource.setUrl("jdbc:postgresql://localhost:5432/messaging_light");
+        dataSource.setUrl("jdbc:postgresql://localhost:5432/messaging");
         dataSource.setUsername("postgres");
         dataSource.setPassword(password);
         return dataSource;

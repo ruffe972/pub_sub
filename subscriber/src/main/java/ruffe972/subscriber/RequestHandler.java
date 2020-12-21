@@ -53,7 +53,8 @@ public class RequestHandler {
     }
 
     private static boolean isValid(MessageDto messageDto) {
-        return messageDto.msisdn >= 0
+        return messageDto.messageId >= 0
+                && messageDto.msisdn >= 0
                 && messageDto.action.equals("PURCHASE") || messageDto.action.equals("SUBSCRIPTION")
                 && messageDto.timestamp >= 0;
     }

@@ -24,9 +24,10 @@ public class Dao {
      */
     Mono<Void> create(MessageDto message) {
         String tableName = message.action.toLowerCase();
-        var sql = String.format("insert into %s values (default, ?, ?)", tableName);
+        var sql = String.format("insert into %s values (default, ?, ?, ?)", tableName);
         var mono = Mono.<Void>fromRunnable(() -> jdbcTemplate.update(
                 sql,
+                message.messageId,
                 message.msisdn,
                 new Timestamp(message.timestamp * 1000)));
         mono.subscribeOn(Schedulers.boundedElastic());

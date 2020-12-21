@@ -6,21 +6,15 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-import java.util.Scanner;
-
 /**
  * Generates and sends json messages to the server.
  */
 @SpringBootApplication
 public class PublisherApplication implements CommandLineRunner {
-    private final static String PUBLISH_COMMAND = "p";
-    private final static String QUIT_COMMAND = "q";
     private static final Logger logger = LoggerFactory.getLogger(PublisherApplication.class);
-    private final MessageGenerator messageGenerator;
     private final MessagePublisher messagePublisher;
 
-    PublisherApplication(MessageGenerator messageGenerator, MessagePublisher messagePublisher) {
-        this.messageGenerator = messageGenerator;
+    PublisherApplication(MessagePublisher messagePublisher) {
         this.messagePublisher = messagePublisher;
     }
 
@@ -28,51 +22,23 @@ public class PublisherApplication implements CommandLineRunner {
         SpringApplication.run(PublisherApplication.class, args);
     }
 
-    /**
-     * Message is sent on user request.
-     */
     @Override
     public void run(String... args) {
-        System.out.printf(
-                "%sEnter command '%s' to publish a message. '%s' - quit.%s",
-                System.lineSeparator(),
-                PUBLISH_COMMAND,
-                QUIT_COMMAND,
-                System.lineSeparator());
-        try (var scanner = new Scanner(System.in)) {
-            String command;
-            do {
-                command = scanner.nextLine();
-                runCommand(command);
-            } while (!command.equals(QUIT_COMMAND));
-        }
+        messagePublisher
+                .publishMessages()
+                .onErrorContinue((e, it) -> logger.error(e.getMessage()))
+                .subscribe(it -> logger.trace("A request has been sent successfully."));
+        waitIndefinitely();
     }
 
     /**
-     * @param command the command entered by user. For example, "p".
+     * Introduces a deliberate deadlock.
      */
-    private void runCommand(String command) {
-        if (command.equals(QUIT_COMMAND)) {
-            System.out.println("Goodbye.");
-        } else if (command.equals("p")) {
-            runPublishCommand();
-        } else {
-            System.out.println("Command is not recognized.");
+    private static void waitIndefinitely() {
+        try {
+            Thread.currentThread().join();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
-    }
-
-    /**
-     * Sends a message to the server.
-     */
-    private void runPublishCommand() {
-        String message = messageGenerator.generate();
-        logger.info("Sending message to server: {}.", message);
-        messagePublisher.publish(message).subscribe(
-                null,
-                e -> {
-                    System.out.println("Failure.");
-                    logger.error(e.getMessage());
-                },
-                () -> System.out.println("Success."));
     }
 }

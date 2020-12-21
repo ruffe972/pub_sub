@@ -8,7 +8,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 public class Config {
 
     @Bean
-    MessagePublisher messagePublisher() {
-        return new MessagePublisher(WebClient.create("http://localhost:8080"));
+    MessagePublisher messagePublisher(MessageGenerator messageGenerator) {
+        return new MessagePublisher(WebClient.create("http://localhost:8080"), messageGenerator);
     }
 }
